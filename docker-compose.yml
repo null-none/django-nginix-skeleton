@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 8000:8000
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static_volume:/app/static
+    depends_on:
+      - app
+      - websocket_app
+    networks:
+      - app_network
+    restart: always
+
+  postgres:
+    image: postgres:11-alpine
+    env_file:
+      - env/.env
+    networks:
+      - db_network
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    restart: always
+
+networks:
+
+  app_network:
+    driver: bridge
+
+  db_network:
+    driver: bridge
+
+
+volumes:
+  db_volume:
+  static_volume:
